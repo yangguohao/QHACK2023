@@ -17,4 +17,4 @@ There are still some deficiencies
 
 (2) Due to time constraints, only one of the results was reproduced.
 
-Please refer to the XXX file for more detailed information.
+#### *Refer to the [QHACK/NEB_VQE_tutorial.ipynb](https://github.com/yangguohao/QHACK2023/blob/main/QHack/NEB_VQE_tutorial.ipynb) file for more detailed information.*
