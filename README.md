@@ -7,11 +7,11 @@ GC Team
 # Final Deliverables
 We replicated the proposed quantum algorithm in the paper [Quantum algorithm for a chemical reaction path optimization by using a variational quantum algorithm and a reaction path generation](https://arxiv.org/abs/2009.06803). We have reproduced the result of three of the images as follows.
 
-![Fig 1.](https://github.com/yangguohao/QHACK2023/blob/main/img/result.png)
+![Fig 1.](img/result.png)
 
 As shown in the figure, we have obtained the results of atomic bond length and force convergence that are similar to the results of the paper.
 
-There are still some point that can be further improved.
+There are still some points that can be further improved:
 
 (1) The article uses the central difference method, which consumes a lot of time. There are much more extension that could be done.
 
