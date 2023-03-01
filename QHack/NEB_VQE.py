@@ -216,22 +216,22 @@ def tangent_spring_force(gold_coor_array, tao_normalized_list, K=0.1):
     return np.array(tangent_spring_force_list)
 
 
-def average_force(gold_coor_array, K=0.1, energy_method='diag'):
+def average_force(gold_coor_array, fix_energy_list, fix_energy_grad_list, K=0.1, energy_method='diag'):
     r"""
     Formula 1
     """    
     energy_list = []
 
     energy_grad_list = []
-    for i in range(len(gold_coor_array)):
+    for i in range(1, len(gold_coor_array)-1):
         energy = energy_diff(gold_coor_array[i], energy_method)
         energy_list.append(energy)
         energy_grad = grad_energy_diff(gold_coor_array[i], energy_method)
         energy_grad_list.append(energy_grad)
 
-    tao_normalized_list = tangent_vector(gold_coor_array, energy_list)
+    tao_normalized_list = tangent_vector(gold_coor_array, [fix_energy_list[0]] + energy_list + [fix_energy_list[1]])
 
-    tangent_grad_energy_list = tangent_grad_energy(energy_grad_list, tao_normalized_list)
+    tangent_grad_energy_list = tangent_grad_energy([fix_energy_grad_list[0]] + energy_grad_list + [fix_energy_grad_list[1]], tao_normalized_list)
 
     tangent_spring_force_list = tangent_spring_force(gold_coor_array, tao_normalized_list, K=K)
 
@@ -269,22 +269,27 @@ def computing_ave_force(cir_dict, train_params):
     r"""
     Calculate average force.
     """
-    frame_num = cir_dict['frame_num']
-    key_num = cir_dict['key_num']
-    fix_coor = cir_dict['fix_coor']
-    ref_key = cir_dict['ref_key']
+    try:
+        frame_num = cir_dict['frame_num']
+        key_num = cir_dict['key_num']
+        fix_coor = cir_dict['fix_coor']
+        ref_key = cir_dict['ref_key']
 
-    fix_params = cir_dict['fix_params']
-    cir_depth = cir_dict['cir_depth']
-    qubit_num = cir_dict['qubit_num']
-    energy_method = cir_dict['energy_method']
-    
+        fix_params = cir_dict['fix_params']
+        cir_depth = cir_dict['cir_depth']
+        qubit_num = cir_dict['qubit_num']
+        energy_method = cir_dict['energy_method']
+        fix_energy_list = cir_dict['fix_energy_list']
+        fix_energy_grad_list = cir_dict['fix_energy_grad_list']
 
-    gold_coor = get_gold_coor(train_params, cir_depth, qubit_num, fix_params, frame_num, key_num, ref_key, fix_coor)
-    
-    ave_force = average_force(gold_coor, energy_method=energy_method)
-    return ave_force
 
+        gold_coor = get_gold_coor(train_params, cir_depth, qubit_num, fix_params, frame_num, key_num, ref_key, fix_coor)
+
+        ave_force = average_force(gold_coor, fix_energy_list, fix_energy_grad_list, energy_method=energy_method)
+        return ave_force
+    except KeyboardInterrupt:
+        import os
+        print(f'Process Done... {os.getpid()}')
 
 def average_force_grad(cir_dict, train_params):
     r"""
@@ -322,6 +327,7 @@ def train_NEB_VQE(fix_coor,
     r"""
     Complete algorithm flow
     """
+    fix_coor = np.array(fix_coor, requires_grad=False)
     key_length_array = np.array(frame_key_length_list, requires_grad=False)
     x, y = key_length_array.shape
     qubit_num = x * y
@@ -330,6 +336,9 @@ def train_NEB_VQE(fix_coor,
 
     train_params = np.zeros(frame_cir_depth * qubit_num * 2, requires_grad=True)
 
+    fix_energy_list = [energy_diff(fix_coor[0]), energy_diff(fix_coor[1])]
+    fix_energy_grad_list = [grad_energy_diff(fix_coor[0]), grad_energy_diff(fix_coor[1])]
+    
     ave_force_list = []
 
     cir_dict = {
@@ -341,7 +350,8 @@ def train_NEB_VQE(fix_coor,
         'fix_coor': fix_coor, 
         'ref_key': ref_key,
         'energy_method': energy_method,
-        
+        'fix_energy_list': fix_energy_list,
+        'fix_energy_grad_list': fix_energy_grad_list,
     }
 
     if opt == 'adam':
