@@ -11,7 +11,7 @@ We replicated the proposed quantum algorithm in the paper [Quantum algorithm for
 
 As shown in the figure, we have obtained the results of atomic bond length and force convergence that are similar to the results of the paper.
 
-There are still some deficiencies
+There are still some point that can be further improved.
 
 (1) The article uses the central difference method, which consumes a lot of time. There are much more extension that could be done.
 
