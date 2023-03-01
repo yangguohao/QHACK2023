@@ -3,6 +3,10 @@ QHack 2023
 
 # Team
 GC Team
+* Guohao Yang
+* Gaoming Fan
+* Yuefeng Lin
+* Zidong Lin
 
 # Final Deliverables
 We replicated the proposed quantum algorithm in the paper [Quantum algorithm for a chemical reaction path optimization by using a variational quantum algorithm and a reaction path generation](https://arxiv.org/abs/2009.06803). We have reproduced the result of three of the images as follows.
